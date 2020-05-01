@@ -3,5 +3,5 @@
 ## install
 
 ```
-npm install --save-dev git://github.com/iaigz/tool-sources.git
+npm install git://github.com/iaigz/tool-sources.git
 ```
