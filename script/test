@@ -5,10 +5,12 @@ cd "$repo" || exit
 
 node test/exports.js || exit
 
-find test/cases -mindepth 1 -maxdepth 1 -type d | while read directory
+while read directory
 do
-  node test/cases.js ${directory/"test/cases"/./cases} || exit
-done
+  reference="${directory/"test/cases"/./cases}"
+  node test/cases.js "$reference" || exit
+  node test/from.js "$directory" || exit
+done < <(find test/cases -mindepth 1 -maxdepth 1 -type d )
 
 {
   echo "TEST standard --fix"

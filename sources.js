@@ -1,4 +1,4 @@
-module.exports = sources
+const exec = require('child_process').exec
 
 /**
  * @function sources: Researches the file dependencies of a commonjs module
@@ -6,7 +6,7 @@ module.exports = sources
  * @returns Array
  */
 
-function sources (mod) {
+module.exports = function sources (mod) {
   return mod.children
     // TAKE CARE OF CIRCULAR DEPENDENCIES
     // given module may have a child module referencing given module
@@ -33,3 +33,29 @@ function parents (mod) {
   }
   return result
 }
+
+module.exports.from = (reference) => new Promise((resolve, reject) => {
+  try {
+    // this should be done through an spawned node process
+    exec(`node -e '
+      sources = require(".")
+      path = "./test/cases/circular-crazy"
+      require("${reference}")
+      mod = require.cache[require.resolve("${reference}")]
+      console.log(JSON.stringify(sources(mod)))
+    '`, (err, stdout) => {
+      if (err) return reject(err)
+      try { resolve(JSON.parse(stdout)) } catch (e) { reject(e) }
+    })
+  } catch (err) {
+    return reject(err)
+  }
+})
+
+module.exports.fromSync = (reference) => {
+  require(reference)
+  return module.exports(require.cache[require.resolve(reference)])
+}
+
+/* vim: set expandtab: */
+/* vim: set filetype=javascript ts=2 shiftwidth=2: */
