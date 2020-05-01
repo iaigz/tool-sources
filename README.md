@@ -1,6 +1,6 @@
 # @iaigz/tool-sources
 
-## instalation
+## install
 
 ```
 npm install --save-dev git://github.com/iaigz/tool-sources.git
